@@ -30,7 +30,7 @@ def backtest(prices, capital=1000, window=5, fraction=0.2):
         market_trend = item["trend"]
         z = item["z_score"]
 
-        print(f"Index: {i}, Price: {current_price}, Trend: {market_trend}, Z-Score: {z}")
+        #print(f"Index: {i}, Price: {current_price}, Trend: {market_trend}, Z-Score: {z}")
 
         spend_cash = cash * fraction 
 
@@ -57,14 +57,12 @@ def backtest(prices, capital=1000, window=5, fraction=0.2):
 
     return portfolio_history
 
-def plot_backtest(prices):
-
-    history = backtest(prices)
+def plot_backtest(prices, history):
 
     plt.subplot(2, 1, 1)
     plt.plot(prices, label="Price")
     plt.title("Prices")
-    plt.legend
+    plt.legend()
     plt.grid(True)
 
     plt.subplot(2, 1, 2)
