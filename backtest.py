@@ -33,7 +33,7 @@ def backtest(prices, capital, window=5, fraction=0.2):
         spend_cash = cash * fraction 
 
         if holding == 0:
-            if market_trend == ["rising", "flat"] and z <= -1.5:
+            if market_trend in ["rising", "flat"] and z <= -1.5:
                 holding = spend_cash / (current_price * 1.005)
                 entry_price = current_price
                 total_spent = spend_cash * 1.01 
