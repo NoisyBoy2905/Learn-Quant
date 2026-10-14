@@ -1,6 +1,8 @@
 from moving_averages import trend
 from z_score import z_score
 
+import matplotlib.pyplot as plt
+
 def precom_indicators(prices, window):
     indicator = []
 
@@ -12,7 +14,7 @@ def precom_indicators(prices, window):
 
     return indicator
 
-def backtest(prices, capital, window=5, fraction=0.2):
+def backtest(prices, capital=1000, window=5, fraction=0.2):
 
     indicator = precom_indicators(prices, window)
     cash = capital
@@ -55,3 +57,24 @@ def backtest(prices, capital, window=5, fraction=0.2):
 
     return portfolio_history
 
+def plot_backtest(prices):
+
+    history = backtest(prices)
+
+    plt.subplot(2, 1, 1)
+    plt.plot(prices, label="Price")
+    plt.title("Prices")
+    plt.legend
+    plt.grid(True)
+
+    plt.subplot(2, 1, 2)
+    plt.plot(history, color="green", label="Portfolio")
+    plt.axhline(1000, color="grey", linestyle="dotted", label="Start")
+    plt.grid(True)
+    plt.legend()
+    plt.title("Backtest Curve")
+    plt.xlabel("Day")
+    plt.ylabel("Value")
+
+    plt.tight_layout()
+    plt.show()
