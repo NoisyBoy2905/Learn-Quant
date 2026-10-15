@@ -23,12 +23,20 @@ def run_batch(start):
 
 	returns = []
 	sharpes = []
+	bh_returns = []
+	beat = 0
 
 	for seed in range(101, 201):
 		prices = make_prices(seed)
 		history = backtest(prices)
 		r = (history[-1] - start) / start
 		returns.append(r)
+
+		bh = (prices[-1] - prices[30]) / prices[30]
+		bh_returns.append(bh)
+
+		if r > bh:
+			beat += 1 
 
 		try:
 			s = sharpe(history)
@@ -41,6 +49,7 @@ def run_batch(start):
 	best = max(returns)
 	worst = min(returns)
 	avg_sharpe = sum(sharpes) / len(sharpes)
+	avg_bh = sum(bh_returns) / len(bh_returns)
 
 	print(f"Average return: {average:.1%}")
 	print(f"Win rate: {wins}/{len(returns)}")
@@ -48,7 +57,8 @@ def run_batch(start):
 	print(f"Worst: {worst:.1%}")
 	print(f"Average Sharpe: {avg_sharpe:.2f}")
 	print(f"Seeds with trades: {len(sharpes)}/100")
-	
+	print(f"Buy & Hold Average: {avg_bh:.1%} ")
+	print(f"Stratergy beat buy and hold: {beat}/100")
 
 def run_once(start):
 
