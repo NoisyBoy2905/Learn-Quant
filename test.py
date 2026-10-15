@@ -52,7 +52,7 @@ def run_batch(start):
 
 	for seed in range(101, 201):
 		prices = make_prices(seed)
-		history = backtest(prices)
+		history, trades = backtest(prices)
 		r = (history[-1] - start) / start
 		returns.append(r)
 
@@ -89,7 +89,7 @@ def run_once(start):
 	test_prices = get_real_data("NVDA")
 
 	start_time = time.perf_counter()
-	results = backtest(test_prices, capital=1000.0)
+	results, trades = backtest(test_prices, capital=1000.0)
 	end_time = time.perf_counter()
 
 	end = results[-1]
@@ -112,12 +112,19 @@ def run_real_batch(start):
 
 	for ticker in TICKERS:
 		prices = get_real_data(ticker)
-		history = backtest(prices)
+		history, trades = backtest(prices)
 		r = (history[-1] - start) / start
 		returns.append(r)
 
 		bh = (prices[-1] - prices[199]) / prices[199]
 		bh_returns.append(bh)
+
+		n = len(trades)
+		won = sum(1 for t in trades if t["profit"] > 0)
+		if n > 0:
+			avg_pct = sum(t["return_pct"] for t in trades) / n
+		else:
+			avg_pct = 0
 
 		if r > bh:
 			beat += 1 
@@ -129,6 +136,7 @@ def run_real_batch(start):
 			pass
 
 		print(f"{ticker:8} statergy {r:6.1%}   Buy & Hold {bh:6.1%}")
+		print(f"         trades {n}   won {won}   avg per trade {avg_pct:.1f}%")
 
 	average = sum(returns) / len(returns)
 	wins = sum(1 for r in returns if r > 0)

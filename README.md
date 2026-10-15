@@ -46,4 +46,7 @@ It made things worse. The average return dropped from 6.6% to 1.4% over 10 years
 - A strategy that works on fake data can completely fail on real data, so you have to test on both
 - Downloading data every run was the slowest part, so I cached it and moved heavy imports so they only load when needed (8 seconds down to 0.1)
 
+### Looking at each trade
+I made the backtest return every trade so I could see where the money went. On the stocks the signal actually works, for example on Nvidia 19 out of 23 trades won at about +4.5% each. But it only trades about twice a year and only uses 20% of the money, so a good signal ends up making very little. On Bitcoin the average trade lost 7.8%, because Bitcoin often drops more than 15% and keeps hitting the stop-loss. A fixed 15% stop is too tight for something that volatile.
+
 All written by me while learning. I'll keep adding to it as I go.

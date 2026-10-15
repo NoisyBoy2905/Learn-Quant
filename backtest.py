@@ -60,7 +60,7 @@ def backtest(prices, capital=1000, window=30, fraction=0.2):
 
         portfolio_history.append(cash + (holding * current_price))
 
-    return portfolio_history
+    return portfolio_history, trades
 
 def plot_backtest(prices, history):
 
