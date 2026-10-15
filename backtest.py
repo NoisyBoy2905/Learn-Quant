@@ -44,7 +44,7 @@ def backtest(prices, capital=1000, window=30, fraction=0.2):
         elif holding > 0:
             percent = (current_price - entry_price) / entry_price
 
-            if percent >= 0.15 or percent <= -0.15 or (market_trend != "falling" and z >= 0):
+            if percent >= 0.15 or percent <= -0.15 or (market_trend != "falling" and z >= 1.5):
                 total_made = holding * (current_price * 0.995)
                 cash += total_made
                 profit = total_made - total_spent

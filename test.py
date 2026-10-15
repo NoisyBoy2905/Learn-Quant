@@ -1,6 +1,7 @@
 import random
 import time
 from backtest import backtest, plot_backtest
+from sharpe_ratio import sharpe
 
 starting_money = 1000
 
@@ -18,9 +19,10 @@ def make_prices(seed=None, fair_value=100.0, strength=0.05):
 
 	return prices
 
-returns = []
-
 def run_batch(start):
+
+	returns = []
+	sharpes = []
 
 	for seed in range(101, 201):
 		prices = make_prices(seed)
@@ -28,22 +30,32 @@ def run_batch(start):
 		r = (history[-1] - start) / start
 		returns.append(r)
 
+		try:
+			s = sharpe(history)
+			sharpes.append(s)
+		except ValueError:
+			pass
+
 	average = sum(returns) / len(returns)
 	wins = sum(1 for r in returns if r > 0)
 	best = max(returns)
 	worst = min(returns)
+	avg_sharpe = sum(sharpes) / len(sharpes)
 
 	print(f"Average return: {average:.1%}")
 	print(f"Win rate: {wins}/{len(returns)}")
 	print(f"Best: {best:.1%}")
 	print(f"Worst: {worst:.1%}")
+	print(f"Average Sharpe: {avg_sharpe:.2f}")
+	print(f"Seeds with trades: {len(sharpes)}/100")
+	
 
 def run_once(start):
 
 	test_prices = make_prices()
 
 	start_time = time.perf_counter()
-	results = backtest(test_prices, capital=1000.0, window=5)
+	results = backtest(test_prices, capital=1000.0)
 	end_time = time.perf_counter()
 
 	end = results[-1]
