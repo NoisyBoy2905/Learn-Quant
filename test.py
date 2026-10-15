@@ -2,6 +2,7 @@ import random
 import time
 from backtest import backtest, plot_backtest
 
+starting_money = 1000
 
 def make_prices(seed=None, fair_value=100.0, strength=0.05):
 	gen = random.Random(seed)
@@ -19,12 +20,12 @@ def make_prices(seed=None, fair_value=100.0, strength=0.05):
 
 returns = []
 
-def run_batch():
+def run_batch(start):
 
-	for seed in range(1, 101):
+	for seed in range(101, 201):
 		prices = make_prices(seed)
 		history = backtest(prices)
-		r = (history[-1] - history[0]) / history[0]
+		r = (history[-1] - start) / start
 		returns.append(r)
 
 	average = sum(returns) / len(returns)
@@ -37,7 +38,7 @@ def run_batch():
 	print(f"Best: {best:.1%}")
 	print(f"Worst: {worst:.1%}")
 
-def run_once():
+def run_once(start):
 
 	test_prices = make_prices()
 
@@ -45,7 +46,6 @@ def run_once():
 	results = backtest(test_prices, capital=1000.0, window=5)
 	end_time = time.perf_counter()
 
-	start = results[0]
 	end = results[-1]
 	ret = (end - start) / start
 
@@ -59,5 +59,4 @@ def run_once():
 
 if __name__ == "__main__":
 
-	run_once()
-	run_batch()
+	run_batch(starting_money)
