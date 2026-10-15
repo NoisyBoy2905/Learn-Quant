@@ -45,6 +45,8 @@ It made things worse. The average return dropped from 6.6% to 1.4% over 10 years
 - Selling early made the win rate slightly better but the return worse
 - A strategy that works on fake data can completely fail on real data, so you have to test on both
 - Downloading data every run was the slowest part, so I cached it and moved heavy imports so they only load when needed (8 seconds down to 0.1)
+- Betting all-in on every trade turned Nvidia into +140% but Bitcoin into -92%. Bet size makes the swings bigger both ways, but it doesn't make a strategy better (Sharpe stayed about 0)
+- Tesla made +1.1% per trade on average but lost 9.8% overall, because losses compound harder than gains (lose 20% and you need +25% to get back)
 
 ### Looking at each trade
 I made the backtest return every trade so I could see where the money went. On the stocks the signal actually works, for example on Nvidia 19 out of 23 trades won at about +4.5% each. But it only trades about twice a year and only uses 20% of the money, so a good signal ends up making very little. On Bitcoin the average trade lost 7.8%, because Bitcoin often drops more than 15% and keeps hitting the stop-loss. A fixed 15% stop is too tight for something that volatile.
