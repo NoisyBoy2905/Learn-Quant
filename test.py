@@ -7,9 +7,11 @@ from sharpe_ratio import sharpe
 
 starting_money = 1000
 
-def get_real_data(ticker, period="2y"):
+TICKERS = ["AAPL", "MSFT", "TSLA", "NVDA", "BTC-USD", "^FTSE", "KO", "JPM"]
+
+def get_real_data(ticker, period="10y"):
 	os.makedirs("data", exist_ok=True)
-	filename = os.path.join("data", f"{ticker}.csv")
+	filename = os.path.join("data", f"{ticker}_{period}.csv")
 
 	if os.path.exists(filename):
 		with open(filename) as f:
@@ -54,7 +56,7 @@ def run_batch(start):
 		r = (history[-1] - start) / start
 		returns.append(r)
 
-		bh = (prices[-1] - prices[30]) / prices[30]
+		bh = (prices[-1] - prices[199]) / prices[199]
 		bh_returns.append(bh)
 
 		if r > bh:
@@ -101,8 +103,51 @@ def run_once(start):
 
 	plot_backtest(test_prices, results)
 
+def run_real_batch(start):
+
+	returns = []
+	sharpes = []
+	bh_returns = []
+	beat = 0
+
+	for ticker in TICKERS:
+		prices = get_real_data(ticker)
+		history = backtest(prices)
+		r = (history[-1] - start) / start
+		returns.append(r)
+
+		bh = (prices[-1] - prices[199]) / prices[199]
+		bh_returns.append(bh)
+
+		if r > bh:
+			beat += 1 
+
+		try:
+			s = sharpe(history)
+			sharpes.append(s)
+		except ValueError:
+			pass
+
+		print(f"{ticker:8} statergy {r:6.1%}   Buy & Hold {bh:6.1%}")
+
+	average = sum(returns) / len(returns)
+	wins = sum(1 for r in returns if r > 0)
+	best = max(returns)
+	worst = min(returns)
+	avg_sharpe = sum(sharpes) / len(sharpes)
+	avg_bh = sum(bh_returns) / len(bh_returns)
+
+	print(f"Average return: {average:.1%}")
+	print(f"Win rate: {wins}/{len(returns)}")
+	print(f"Best: {best:.1%}")
+	print(f"Worst: {worst:.1%}")
+	print(f"Average Sharpe: {avg_sharpe:.2f}")
+	print(f"Seeds with trades: {len(sharpes)}/{len(returns)}")
+	print(f"Buy & Hold Average: {avg_bh:.1%} ")
+	print(f"Stratergy beat buy and hold: {beat}/{len(returns)}")
+
 if __name__ == "__main__":
 
 
 	print(f"Imports: {time.perf_counter() - t_start:.2f}s")
-	run_once(starting_money)
+	run_real_batch(starting_money)

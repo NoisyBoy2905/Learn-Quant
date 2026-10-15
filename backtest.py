@@ -1,7 +1,8 @@
 from moving_averages import trend
 from z_score import z_score
+from volatility import mean
 
-def precom_indicators(prices, window):
+def precom_indicators(prices, window=30):
     indicator = []
 
     for i in range(window, len(prices)):
@@ -28,12 +29,18 @@ def backtest(prices, capital=1000, window=30, fraction=0.2):
         market_trend = item["trend"]
         z = item["z_score"]
 
+        if i >= 199:
+            sma200 = mean(prices[i - 199: i + 1])
+            uptrend = current_price > sma200
+        else:
+            uptrend = False
+
         #print(f"Index: {i}, Price: {current_price}, Trend: {market_trend}, Z-Score: {z}")
 
         spend_cash = cash * fraction 
 
         if holding == 0:
-            if z <= -1.5:
+            if z <= -1.5 and uptrend:
                 holding = spend_cash / (current_price * 1.005)
                 entry_price = current_price
                 total_spent = spend_cash * 1.01 
