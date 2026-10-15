@@ -1,9 +1,31 @@
 import random
-import time
+import time; t_start = time.perf_counter()
+import os
+import csv
 from backtest import backtest, plot_backtest
 from sharpe_ratio import sharpe
 
 starting_money = 1000
+
+def get_real_data(ticker, period="2y"):
+	os.makedirs("data", exist_ok=True)
+	filename = os.path.join("data", f"{ticker}.csv")
+
+	if os.path.exists(filename):
+		with open(filename) as f:
+			reader = csv.reader(f)
+			next(reader)
+			return [float(row[1]) for row in reader]
+	
+	import yfinance as yf
+	
+	data = yf.download(ticker, period=period)
+	close = data["Close"][ticker]
+	fixed = close.dropna()
+	fixed.to_csv(filename)
+	
+	return fixed.tolist()
+
 
 def make_prices(seed=None, fair_value=100.0, strength=0.05):
 	gen = random.Random(seed)
@@ -56,13 +78,13 @@ def run_batch(start):
 	print(f"Best: {best:.1%}")
 	print(f"Worst: {worst:.1%}")
 	print(f"Average Sharpe: {avg_sharpe:.2f}")
-	print(f"Seeds with trades: {len(sharpes)}/100")
+	print(f"Seeds with trades: {len(sharpes)}/{len(returns)}")
 	print(f"Buy & Hold Average: {avg_bh:.1%} ")
-	print(f"Stratergy beat buy and hold: {beat}/100")
+	print(f"Stratergy beat buy and hold: {beat}/{len(returns)}")
 
 def run_once(start):
 
-	test_prices = make_prices()
+	test_prices = get_real_data("NVDA")
 
 	start_time = time.perf_counter()
 	results = backtest(test_prices, capital=1000.0)
@@ -72,7 +94,7 @@ def run_once(start):
 	ret = (end - start) / start
 
 	print(f"Time Taken: {end_time - start_time:.8f} seconds")
-	print("Portfolio History:", results)
+	#print("Portfolio History:", results)
 	print(f"Starting: £{start:.2f}")
 	print(f"Final:    £{end:.2f}")
 	print(f"Return:    {ret:.1%}")
@@ -81,4 +103,6 @@ def run_once(start):
 
 if __name__ == "__main__":
 
-	run_batch(starting_money)
+
+	print(f"Imports: {time.perf_counter() - t_start:.2f}s")
+	run_once(starting_money)
